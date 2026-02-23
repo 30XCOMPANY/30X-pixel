@@ -1,25 +1,24 @@
-import type * as vscode from 'vscode';
+// OpenClaw Agent Types
+// Simplified for OpenClaw Gateway API integration
 
 export interface AgentState {
-	id: number;
-	terminalRef: vscode.Terminal;
-	projectDir: string;
-	jsonlFile: string;
-	fileOffset: number;
-	lineBuffer: string;
-	activeToolIds: Set<string>;
-	activeToolStatuses: Map<string, string>;
-	activeToolNames: Map<string, string>;
-	activeSubagentToolIds: Map<string, Set<string>>; // parentToolId → active sub-tool IDs
-	activeSubagentToolNames: Map<string, Map<string, string>>; // parentToolId → (subToolId → toolName)
-	isWaiting: boolean;
-	permissionSent: boolean;
-	hadToolsInTurn: boolean;
+  id: number;
+  sessionKey: string;
+  model: string;
+  status: 'active' | 'waiting' | 'idle';
+  currentTask: string;
+  isWaiting: boolean;
+  activeToolIds: Set<string>;
+  activeToolStatuses: Map<string, string>;
+  // OpenClaw-specific
+  channel?: string;
+  createdAt?: string;
+  activeMinutes?: number;
 }
 
 export interface PersistedAgent {
-	id: number;
-	terminalName: string;
-	jsonlFile: string;
-	projectDir: string;
+  id: number;
+  sessionKey: string;
+  model: string;
+  channel?: string;
 }

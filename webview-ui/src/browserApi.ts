@@ -8,9 +8,7 @@ class BrowserApi {
   private eventSource: EventSource | null = null;
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      this.connect();
-    }
+    this.connect();
   }
 
   private connect(): void {
@@ -28,11 +26,7 @@ class BrowserApi {
 
     this.eventSource.onerror = () => {
       console.log('[Pixel Agents] SSE connection lost, reconnecting...');
-      setTimeout(() => {
-        if (this.eventSource?.readyState === EventSource.CLOSED) {
-          this.connect();
-        }
-      }, 3000);
+      setTimeout(() => this.connect(), 3000);
     };
   }
 

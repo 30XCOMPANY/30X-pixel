@@ -1,8 +1,9 @@
 {
-  "name": "pixel-agents",
-  "displayName": "Pixel Agents",
-  "description": "Pixel art office where your Claude Code agents come to life as animated characters",
+  "name": "pixel-agents-openclaw",
+  "displayName": "Pixel Agents OpenClaw",
+  "description": "Pixel art office where your OpenClaw agents come to life as animated characters",
   "version": "1.0.0",
+  "type": "module",
   "publisher": "pablodelucca",
   "repository": {
     "type": "git",
@@ -73,5 +74,9 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.54.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
   }
 }
