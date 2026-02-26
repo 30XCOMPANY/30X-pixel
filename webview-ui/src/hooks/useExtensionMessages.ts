@@ -46,6 +46,10 @@ export interface ExtensionMessageState {
   loadedAssets?: { catalog: FurnitureAsset[]; sprites: Record<string, string[][]> }
 }
 
+interface ExtensionMessageOptions {
+  enableDemoFallback?: boolean
+}
+
 function saveAgentSeats(os: OfficeState): void {
   const seats: Record<number, { palette: number; hueShift: number; seatId: string | null }> = {}
   for (const ch of os.characters.values()) {
@@ -59,6 +63,7 @@ export function useExtensionMessages(
   getOfficeState: () => OfficeState,
   onLayoutLoaded?: (layout: OfficeLayout) => void,
   isEditDirty?: () => boolean,
+  options: ExtensionMessageOptions = {},
 ): ExtensionMessageState {
   const [agents, setAgents] = useState<number[]>([])
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null)
@@ -369,6 +374,37 @@ export function useExtensionMessages(
       }
     }
 
+    const injectDemoData = () => {
+      if (layoutReadyRef.current) return
+      console.log('[Webview] SSE unavailable, bootstrapping demo office data')
+      const demoAgents = [1, 2, 3, 4, 5, 6]
+      const demoStatuses = [
+        'Building launch page',
+        'Designing product flows',
+        'Optimizing experiments',
+        'Writing docs',
+        'Running QA checks',
+        'Planning roadmap',
+      ]
+      const agentMeta = Object.fromEntries(
+        demoAgents.map((id, index) => [id, { palette: index % 6, hueShift: 0, seatId: null }]),
+      )
+
+      processMessage({ type: 'layoutLoaded', layout: null })
+      processMessage({ type: 'existingAgents', agents: demoAgents, agentMeta })
+
+      for (const [index, id] of demoAgents.entries()) {
+        processMessage({
+          type: 'agentToolStart',
+          id,
+          toolId: `demo-${id}`,
+          status: demoStatuses[index] || 'Working',
+        })
+        processMessage({ type: 'agentStatus', id, status: 'active' })
+      }
+      processMessage({ type: 'agentSelected', id: demoAgents[0] })
+    }
+
     // VS Code webview messages
     const windowHandler = (event: MessageEvent) => processMessage(event.data)
     window.addEventListener('message', windowHandler)
@@ -378,11 +414,16 @@ export function useExtensionMessages(
 
     vscode.postMessage({ type: 'webviewReady' })
 
+    const demoTimer = options.enableDemoFallback
+      ? window.setTimeout(injectDemoData, 1200)
+      : null
+
     return () => {
       window.removeEventListener('message', windowHandler)
       vscode.removeMessageHandler(processMessage)
+      if (demoTimer) window.clearTimeout(demoTimer)
     }
-  }, [getOfficeState])
+  }, [getOfficeState, options.enableDemoFallback])
 
   return { agents, selectedAgent, agentTools, agentStatuses, subagentTools, subagentCharacters, layoutReady, loadedAssets }
 }

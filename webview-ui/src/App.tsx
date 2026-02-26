@@ -26,6 +26,10 @@ function getOfficeState(): OfficeState {
   return officeStateRef.current
 }
 
+interface AppProps {
+  mode?: 'extension' | 'website'
+}
+
 const actionBarBtnStyle: React.CSSProperties = {
   padding: '4px 10px',
   fontSize: '22px',
@@ -116,20 +120,27 @@ function EditActionBar({ editor, editorState: es }: { editor: ReturnType<typeof 
   )
 }
 
-function App() {
+function App({ mode = 'extension' }: AppProps) {
+  const isWebsiteMode = mode === 'website'
   const editor = useEditorActions(getOfficeState, editorState)
 
   const isEditDirty = useCallback(() => editor.isEditMode && editor.isDirty, [editor.isEditMode, editor.isDirty])
 
-  const { agents, selectedAgent, agentTools, agentStatuses, subagentTools, subagentCharacters, layoutReady, loadedAssets } = useExtensionMessages(getOfficeState, editor.setLastSavedLayout, isEditDirty)
+  const { agents, selectedAgent, agentTools, agentStatuses, subagentTools, subagentCharacters, layoutReady, loadedAssets } = useExtensionMessages(
+    getOfficeState,
+    editor.setLastSavedLayout,
+    isEditDirty,
+    { enableDemoFallback: isWebsiteMode },
+  )
 
   const [isDebugMode, setIsDebugMode] = useState(false)
 
   const handleToggleDebugMode = useCallback(() => setIsDebugMode((prev) => !prev), [])
 
   const handleSelectAgent = useCallback((id: number) => {
+    if (isWebsiteMode) return
     vscode.postMessage({ type: 'focusAgent', id })
-  }, [])
+  }, [isWebsiteMode])
 
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -147,16 +158,18 @@ function App() {
   )
 
   const handleCloseAgent = useCallback((id: number) => {
+    if (isWebsiteMode) return
     vscode.postMessage({ type: 'closeAgent', id })
-  }, [])
+  }, [isWebsiteMode])
 
   const handleClick = useCallback((agentId: number) => {
+    if (isWebsiteMode) return
     // If clicked agent is a sub-agent, focus the parent's terminal instead
     const os = getOfficeState()
     const meta = os.subagentMeta.get(agentId)
     const focusId = meta ? meta.parentAgentId : agentId
     vscode.postMessage({ type: 'focusAgent', id: focusId })
-  }, [])
+  }, [isWebsiteMode])
 
   const officeState = getOfficeState()
 
@@ -223,19 +236,21 @@ function App() {
         }}
       />
 
-      <BottomToolbar
-        isEditMode={editor.isEditMode}
-        onOpenClaude={editor.handleOpenClaude}
-        onToggleEditMode={editor.handleToggleEditMode}
-        isDebugMode={isDebugMode}
-        onToggleDebugMode={handleToggleDebugMode}
-      />
+      {!isWebsiteMode && (
+        <BottomToolbar
+          isEditMode={editor.isEditMode}
+          onOpenClaude={editor.handleOpenClaude}
+          onToggleEditMode={editor.handleToggleEditMode}
+          isDebugMode={isDebugMode}
+          onToggleDebugMode={handleToggleDebugMode}
+        />
+      )}
 
-      {editor.isEditMode && editor.isDirty && (
+      {!isWebsiteMode && editor.isEditMode && editor.isDirty && (
         <EditActionBar editor={editor} editorState={editorState} />
       )}
 
-      {showRotateHint && (
+      {!isWebsiteMode && showRotateHint && (
         <div
           style={{
             position: 'absolute',
@@ -258,7 +273,7 @@ function App() {
         </div>
       )}
 
-      {editor.isEditMode && (() => {
+      {!isWebsiteMode && editor.isEditMode && (() => {
         // Compute selected furniture color from current layout
         const selUid = editorState.selectedFurnitureUid
         const selColor = selUid
@@ -293,9 +308,10 @@ function App() {
         zoom={editor.zoom}
         panRef={editor.panRef}
         onCloseAgent={handleCloseAgent}
+        allowClose={!isWebsiteMode}
       />
 
-      {isDebugMode && (
+      {!isWebsiteMode && isDebugMode && (
         <DebugView
           agents={agents}
           selectedAgent={selectedAgent}

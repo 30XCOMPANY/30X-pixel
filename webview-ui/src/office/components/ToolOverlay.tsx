@@ -14,6 +14,7 @@ interface ToolOverlayProps {
   zoom: number
   panRef: React.RefObject<{ x: number; y: number }>
   onCloseAgent: (id: number) => void
+  allowClose?: boolean
 }
 
 /** Derive a short human-readable activity string from tools/status */
@@ -49,6 +50,7 @@ export function ToolOverlay({
   zoom,
   panRef,
   onCloseAgent,
+  allowClose = true,
 }: ToolOverlayProps) {
   const [, setTick] = useState(0)
   useEffect(() => {
@@ -179,7 +181,7 @@ export function ToolOverlay({
               >
                 {activityText}
               </span>
-              {isSelected && !isSub && (
+              {allowClose && isSelected && !isSub && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
