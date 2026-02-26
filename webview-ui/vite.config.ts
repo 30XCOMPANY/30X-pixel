@@ -7,5 +7,5 @@ export default defineConfig({
     outDir: '../dist/webview',
     emptyOutDir: true,
   },
-  base: './',
+  base: '/',
 })
