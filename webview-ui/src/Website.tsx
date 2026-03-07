@@ -1,222 +1,232 @@
-/**
- * [INPUT]: 依赖 react-router-dom 的路由能力，依赖 App 的像素办公室渲染能力
- * [OUTPUT]: 对外提供 30X.company 官网路由与页面结构
- * [POS]: webview-ui 的网站入口壳层，承载导航、页面布局和内容编排
- * [PROTOCOL]: 变更时更新此头部，然后检查 AGENTS.md
- */
-import { useEffect, useState } from 'react'
-import { BrowserRouter, Link, NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { BrowserRouter, Link } from 'react-router-dom'
 import App from './App.js'
-import './site.css'
-
-const NAV_ITEMS = [
-  { to: '/', label: '首页' },
-  { to: '/about', label: '关于我们' },
-  { to: '/services', label: '产品服务' },
-  { to: '/contact', label: '联系方式' },
-]
-
-function ScrollToTop() {
-  const { pathname } = useLocation()
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
-  }, [pathname])
-  return null
-}
 
 function SiteHeader() {
-  const [open, setOpen] = useState(false)
-  const closeMenu = () => setOpen(false)
-
   return (
-    <header className="site-header">
-      <div className="site-wrap">
-        <div className="site-header-inner">
-          <Link className="site-logo" to="/" onClick={closeMenu}>
-            30X.company
-          </Link>
-          <button className="site-menu-btn" onClick={() => setOpen((v) => !v)} aria-label="切换导航">
-            菜单
-          </button>
-          <nav className={`site-nav ${open ? 'site-nav-open' : ''}`}>
-            {NAV_ITEMS.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) => `site-nav-link ${isActive ? 'site-nav-link-active' : ''}`}
-                onClick={closeMenu}
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-      </div>
+    <header style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '56px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 24px',
+      background: 'rgba(0,0,0,0.7)',
+      backdropFilter: 'blur(10px)',
+      zIndex: 1000,
+      borderBottom: '1px solid rgba(255,255,255,0.1)'
+    }}>
+      <Link to="/" style={{
+        fontSize: '18px',
+        fontWeight: 700,
+        color: '#fff',
+        textDecoration: 'none',
+        letterSpacing: '-0.02em'
+      }}>
+        30X
+      </Link>
+      <nav style={{ display: 'flex', gap: '24px' }}>
+        <a href="#about" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: '14px' }}>About</a>
+        <a href="#contact" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: '14px' }}>Contact</a>
+      </nav>
     </header>
   )
 }
 
-function HomePage() {
-  return (
-    <div className="site-wrap">
-      <section className="hero">
-        <div className="hero-copy">
-          <p className="eyebrow">Pixel-native product studio</p>
-          <h1>30X.company 把复杂系统做成清晰、可运行、可增长的产品。</h1>
-          <p className="hero-subtitle">
-            我们把设计、工程与 AI 自动化融合在一个像素办公室里，把点子变成上线可验证的真实产品。
-          </p>
-          <div className="hero-actions">
-            <Link to="/services" className="site-btn site-btn-primary">查看产品服务</Link>
-            <Link to="/contact" className="site-btn site-btn-secondary">联系我们</Link>
-          </div>
-        </div>
-        <div className="office-stage">
-          <App mode="website" />
-        </div>
-      </section>
+function HeroOffice() {
+  const [status, setStatus] = useState({ state: 'idle', detail: 'Welcome to 30X' })
+  
+  useEffect(() => {
+    // Simulate different states for demo
+    const states = [
+      { state: 'idle', detail: 'Ready for your project' },
+      { state: 'building', detail: 'Building something cool' },
+      { state: 'researching', detail: 'Finding the best solution' },
+      { state: 'idle', detail: 'Waiting for ideas' }
+    ]
+    let i = 0
+    const interval = setInterval(() => {
+      setStatus(states[i % states.length])
+      i++
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
 
-      <section className="site-section">
-        <h2>我们做什么</h2>
-        <div className="feature-grid">
-          <article className="feature-card">
-            <h3>产品孵化</h3>
-            <p>从 0 到 1 定义 MVP，快速落地并验证市场信号。</p>
-          </article>
-          <article className="feature-card">
-            <h3>增长工程</h3>
-            <p>把实验、追踪、内容和转化流程接成可复用的增长系统。</p>
-          </article>
-          <article className="feature-card">
-            <h3>AI 工作流</h3>
-            <p>将 AI agent 接入研发和运营主链路，减少重复性工作。</p>
-          </article>
-        </div>
-      </section>
-    </div>
-  )
-}
-
-function AboutPage() {
   return (
-    <div className="site-wrap">
-      <section className="site-section">
-        <p className="eyebrow">About 30X</p>
-        <h1>我们是一支偏工程驱动的产品团队。</h1>
-        <p>
-          30X.company 专注把创意变成可持续运行的业务系统。我们坚持小步快跑、快速验证、持续迭代，
-          用简单直接的方案解决真实问题。
-        </p>
-      </section>
-      <section className="site-section">
-        <h2>合作方式</h2>
-        <div className="feature-grid">
-          <article className="feature-card">
-            <h3>Discovery Sprint</h3>
-            <p>1-2 周明确产品定位、目标用户、优先级路线图。</p>
-          </article>
-          <article className="feature-card">
-            <h3>Build Sprint</h3>
-            <p>4-8 周交付可上线版本，包含埋点、监控和基础运营能力。</p>
-          </article>
-          <article className="feature-card">
-            <h3>Growth Sprint</h3>
-            <p>持续优化获客和留存，把数据反馈接入产品迭代闭环。</p>
-          </article>
-        </div>
-      </section>
-    </div>
-  )
-}
-
-function ServicesPage() {
-  return (
-    <div className="site-wrap">
-      <section className="site-section">
-        <p className="eyebrow">Products & Services</p>
-        <h1>面向产品化增长的完整服务栈。</h1>
-        <div className="services-list">
-          <article className="service-item">
-            <h3>产品策略与原型</h3>
-            <p>用户研究、信息架构、交互原型与可落地规格。</p>
-          </article>
-          <article className="service-item">
-            <h3>Web 应用开发</h3>
-            <p>React + TypeScript 全栈落地，注重性能和维护成本。</p>
-          </article>
-          <article className="service-item">
-            <h3>增长与自动化</h3>
-            <p>埋点、实验、内容系统与 AI agent 自动化流程集成。</p>
-          </article>
-          <article className="service-item">
-            <h3>部署与运维</h3>
-            <p>Vercel 部署、监控告警、发布流程与可观测性建设。</p>
-          </article>
-        </div>
-      </section>
-    </div>
-  )
-}
-
-function ContactPage() {
-  return (
-    <div className="site-wrap">
-      <section className="site-section">
-        <p className="eyebrow">Contact</p>
-        <h1>把你的项目发给我们。</h1>
-        <p>我们会在 1-2 个工作日内回复，给出清晰的下一步建议。</p>
-        <div className="contact-grid">
-          <article className="feature-card">
-            <h3>Email</h3>
-            <p><a href="mailto:hello@30x.company">hello@30x.company</a></p>
-          </article>
-          <article className="feature-card">
-            <h3>Business Hours</h3>
-            <p>Mon - Fri 10:00 - 19:00 (UTC+8)</p>
-          </article>
-          <article className="feature-card">
-            <h3>Location</h3>
-            <p>Remote-first, serving teams globally</p>
-          </article>
-        </div>
-      </section>
-    </div>
-  )
-}
-
-function SiteFooter() {
-  return (
-    <footer className="site-footer">
-      <div className="site-wrap">
-        <p>© {new Date().getFullYear()} 30X.company. Built with pixel precision.</p>
+    <div style={{
+      width: '100%',
+      height: 'calc(100vh - 56px)',
+      marginTop: '56px',
+      position: 'relative',
+      background: '#0a0a0f'
+    }}>
+      <div style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '800px',
+        height: '500px',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        boxShadow: '0 0 60px rgba(100,200,255,0.15), 0 0 120px rgba(100,200,255,0.05)'
+      }}>
+        <App mode="website" />
       </div>
-    </footer>
+      
+      {/* Status overlay */}
+      <div style={{
+        position: 'absolute',
+        bottom: '32px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: 'rgba(0,0,0,0.8)',
+        backdropFilter: 'blur(10px)',
+        padding: '12px 24px',
+        borderRadius: '8px',
+        border: '1px solid rgba(255,255,255,0.1)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px'
+      }}>
+        <div style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          background: status.state === 'idle' ? '#4ade80' : '#60a5fa',
+          animation: 'pulse 2s infinite'
+        }} />
+        <span style={{ color: '#fff', fontSize: '14px' }}>{status.detail}</span>
+      </div>
+      
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+      `}</style>
+    </div>
   )
 }
 
-function WebsiteRoutes() {
+function AboutSection() {
   return (
-    <>
-      <ScrollToTop />
-      <SiteHeader />
-      <main className="site-main">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/services" element={<ServicesPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </main>
-      <SiteFooter />
-    </>
+    <section id="about" style={{
+      padding: '80px 24px',
+      background: '#0a0a0f',
+      minHeight: '400px'
+    }}>
+      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <h2 style={{ 
+          fontSize: '32px', 
+          color: '#fff', 
+          marginBottom: '24px',
+          fontWeight: 600
+        }}>
+          We build AI-powered products
+        </h2>
+        <p style={{ 
+          color: 'rgba(255,255,255,0.6)', 
+          fontSize: '16px',
+          lineHeight: 1.7
+        }}>
+          30X is a pixel-native product studio. We transform complex systems 
+          into clear, runnable, and scalable products. Our team combines 
+          design, engineering, and AI automation to ship fast.
+        </p>
+        
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(3, 1fr)', 
+          gap: '24px',
+          marginTop: '48px'
+        }}>
+          {[
+            { title: 'Fast', desc: 'Ship in days, not months' },
+            { title: 'Smart', desc: 'AI-first architecture' },
+            { title: 'Focused', desc: 'Product-led growth' }
+          ].map(item => (
+            <div key={item.title} style={{
+              padding: '24px',
+              background: 'rgba(255,255,255,0.03)',
+              borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.05)'
+            }}>
+              <h3 style={{ color: '#fff', fontSize: '18px', marginBottom: '8px' }}>{item.title}</h3>
+              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ContactSection() {
+  return (
+    <section id="contact" style={{
+      padding: '80px 24px',
+      background: '#050508',
+      borderTop: '1px solid rgba(255,255,255,0.05)'
+    }}>
+      <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
+        <h2 style={{ 
+          fontSize: '32px', 
+          color: '#fff', 
+          marginBottom: '16px',
+          fontWeight: 600
+        }}>
+          Let's build something
+        </h2>
+        <p style={{ 
+          color: 'rgba(255,255,255,0.6)', 
+          fontSize: '16px',
+          marginBottom: '32px'
+        }}>
+          Tell us about your project. We'll get back to you soon.
+        </p>
+        <a href="mailto:hello@30x.company" style={{
+          display: 'inline-block',
+          padding: '14px 32px',
+          background: '#fff',
+          color: '#000',
+          borderRadius: '8px',
+          textDecoration: 'none',
+          fontWeight: 600,
+          fontSize: '16px'
+        }}>
+          hello@30x.company
+        </a>
+      </div>
+      
+      <footer style={{
+        marginTop: '80px',
+        textAlign: 'center',
+        color: 'rgba(255,255,255,0.3)',
+        fontSize: '14px'
+      }}>
+        © {new Date().getFullYear()} 30X.company
+      </footer>
+    </section>
   )
 }
 
 export default function Website() {
   return (
     <BrowserRouter>
-      <WebsiteRoutes />
+      <div style={{ 
+        background: '#0a0a0f', 
+        minHeight: '100vh',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+      }}>
+        <SiteHeader />
+        <HeroOffice />
+        <AboutSection />
+        <ContactSection />
+      </div>
     </BrowserRouter>
   )
 }
