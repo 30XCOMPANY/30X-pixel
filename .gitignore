@@ -8,3 +8,8 @@ node_modules
 /sprites-export
 .env
 .vercel
+
+# OpenClaw Swarm runtime
+.openclaw/swarm.db
+.openclaw/active-tasks.json
+.openclaw/logs/

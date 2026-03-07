@@ -1,18 +1,31 @@
-# 30X.company Website - Pixel Office Official Site
-TypeScript + React + Vite + Canvas + Node.js(Express/SSE)
+# 30X-pixel - OpenClaw Seeded Project
+
+This repository is managed by OpenClaw swarm seeding for reusable multi-agent delivery workflows.
 
 <directory>
-webview-ui/ - 官网前端与像素办公室渲染核心 (6 子目录: src/public/...)
-src/ - VSCode 扩展主逻辑（保留，非官网主入口）
-scripts/ - 资源导入与工具脚本
-dist/ - 构建产物目录（web 输出到 dist/webview）
+.openclaw/ - Project thin control plane (seeded wrappers + SQLite state + compatibility projection)
+.github/ - Project module
+.vscode/ - Project module
+scripts/ - Project module
+src/ - Project module
+webview-ui/ - Project module
 </directory>
 
 <config>
-package.json - 项目脚本与依赖入口
-vercel.json - Vercel 构建与 SPA 重写配置
-tsconfig.json - 根 TS 编译配置
-server.ts - 本地 HTTP + SSE 服务入口
+.gitignore - Project file
+.vscodeignore - Project file
+CLAUDE.md - Project file
+CODE_OF_CONDUCT.md - Project file
+CONTRIBUTORS.md - Project file
+esbuild.js - Project file
+eslint.config.mjs - Project file
+icon.png - Project file
+LICENSE - Project file
+package-lock.json - Project file
 </config>
 
-法则: 极简·稳定·导航·版本精确
+Rules
+- Keep project-specific behavior in code; keep orchestration behavior in `.openclaw/` wrappers and `swarm-core`.
+- Treat `.openclaw/swarm.db` as task truth source and `active-tasks.json` as compatibility projection only.
+
+[PROTOCOL]: 变更时更新此头部，然后检查 AGENTS.md

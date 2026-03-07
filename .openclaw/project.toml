@@ -1,0 +1,35 @@
+repo_path = "/Users/oogie/.openclaw/workspace/30X-pixel"
+base_branch = "main"
+worktree_base = "/Users/oogie/code-worktrees/30X-pixel"
+default_driver = "codex"
+max_attempts = 3
+notify_on_ready = true
+required_reviews = ["codex", "claude"]
+
+[notifications]
+provider = "openclaw"
+enabled = true
+channel = "discord"
+target = ""
+account = ""
+silent = false
+dry_run = false
+events = ["ready_to_merge", "merged"]
+allow_failure_events = false
+
+[progress]
+enabled = true
+interval_minutes = 5
+
+[drivers.codex]
+reasoning = "high"
+
+[drivers.claudecode]
+reasoning = "high"
+
+[drivers.opencode]
+reasoning = "high"
+
+[drivers.gemini-cli]
+reasoning = "high"
+enabled = true
